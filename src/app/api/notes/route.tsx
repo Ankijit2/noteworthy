@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server'
 import prisma from '@/lib/prisma-client'
 import { getSession } from "@auth0/nextjs-auth0";
+import { addNotesSchema } from '@/types/type';
 
 // GET /api/notes/:id - Retrieve a note by ID
 export async function GET(req: NextRequest) {
@@ -33,6 +34,11 @@ export async function POST(req: NextRequest) {
       if(!session) {
         return NextResponse.json({ error: 'User not authenticated' }, { status: 401 })
       }
+      const validated = addNotesSchema.safeParse({ title, content });
+      if (!validated.success) {
+        return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+      }
+
      console.log(session.user)
   
       const newNote = await prisma.note.create({
@@ -54,7 +60,11 @@ export async function PUT(req: NextRequest) {
   if(!session) {
     return NextResponse.json({ error: 'User not authenticated' }, { status: 401 })
   }
-
+const updateNotesSchema = addNotesSchema.partial();
+  const validated = updateNotesSchema.safeParse(data);
+  if (!validated.success) {
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+  }
   try {
   
 
@@ -66,8 +76,8 @@ export async function PUT(req: NextRequest) {
         userId: session.user.sub
        },
       data: { 
-        title: data.title,
-        content: data.content
+        title: validated.data.title,
+        content: validated.data.content
        },
     })
     if(!updatedNote) {
