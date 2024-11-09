@@ -4,7 +4,7 @@ import "./globals.css";
 
 import QueryProvider from "@/lib/query-client-provider";
 import { UserProvider } from '@auth0/nextjs-auth0/client';
-
+import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
   title: "NoteWorthy",
@@ -26,6 +26,7 @@ export default function RootLayout({
        
       >
         {children}
+        <Toaster/>
       </body>
       
       </UserProvider>

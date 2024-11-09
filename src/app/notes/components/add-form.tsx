@@ -15,6 +15,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
+import { useToast } from '@/hooks/use-toast'
 
 import { Button } from "@/components/ui/button"
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -27,6 +28,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { usePostNotes } from '../hooks/hooks'
 function Addform() {
   const { mutate,isPending } = usePostNotes()
+  const { toast } = useToast()
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const addForm = useForm<z.infer<typeof addNotesSchema>>({
     resolver: zodResolver(addNotesSchema),
@@ -38,7 +40,21 @@ function Addform() {
 
   function addNote(data: z.infer<typeof addNotesSchema>) {
     mutate(data,{
+      onSuccess: () => {
+        toast({
+          title: "Note Added",
+          description: "Note added successfully",
+        })
+      },
+      onError: () => {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to add note",
+        })
+      },
       onSettled: () => setIsAddDialogOpen(false)
+
     })
     
   }

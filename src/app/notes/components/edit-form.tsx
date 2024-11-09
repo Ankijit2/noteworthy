@@ -23,13 +23,13 @@ import {
   import z from 'zod'
 import { Input } from '@/components/ui/input'
 
+import { useToast } from '@/hooks/use-toast'
 import { Edit2 } from 'lucide-react'
 import { useUpdateNotes } from '../hooks/hooks'
 
 export default function Editform({note}:any) {
     const { mutate,isPending } = useUpdateNotes()
-
-
+    const { toast } = useToast()
     const initialValues = useCallback(
         () => ({
             title: note.title,
@@ -63,7 +63,19 @@ export default function Editform({note}:any) {
     const updateNote = async (data: z.infer<typeof addNotesSchema>) => {
         const id = note.id
         mutate({...data,id}, {
-          onSettled: () => {
+          onSuccess: () => {
+            toast({
+              title: "Note Updated",
+              description: "Note updated successfully",
+            })
+          },
+          onError: () => {
+            toast({
+              variant: "destructive",
+              title: "Error",
+              description: "Failed to update note",
+            })
+          },onSettled: () => {
             setIsEditDialogOpen(false);
           },
         });

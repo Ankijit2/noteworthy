@@ -11,8 +11,11 @@ import { useGetNotes } from './hooks/hooks'
 import Editform from './components/edit-form'
 import { Skeleton } from "@/components/ui/skeleton"
 import { useDeleteNotes } from './hooks/hooks'
+import Profile from './components/profile'
+import { useToast } from '@/hooks/use-toast'
 
 export default function NotesPage() {
+  const { toast } = useToast()
   const [searchTerm, setSearchTerm] = useState('')
   const { data, isLoading } = useGetNotes()
   const { mutate } = useDeleteNotes()
@@ -24,11 +27,27 @@ export default function NotesPage() {
 
   const handleDelete = async(id: string) => {
     console.log(id)
-    await mutate(id)
+    await mutate(id,{
+      onSuccess: () => {
+        toast({
+          title: "Note Deleted",
+          description: "Note deleted successfully",
+        })
+      },
+      onError: () => {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to delete note",
+        })
+      }
+    })
   }
   return (
     <div className="container mx-auto p-4 max-w-7xl ">
-      <h1 className="text-3xl font-bold mb-6">Your Created Notes</h1>
+      <div className='flex justify-between'> <h1 className="text-3xl font-bold mb-6">Your Created Notes</h1>
+      <Profile/></div>
+     
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="relative flex-grow">
           <Input
