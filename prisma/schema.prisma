@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+
+model Note {
+ id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  title     String   // Title of the note
+  content   String   // Content of the note
+  createdAt DateTime @default(now())  // Timestamp for creation
+  updatedAt DateTime @updatedAt // Timestamp for last update
+
+  // Optionally, if you want to associate notes with a user
+  userId    String?  // Reference to a user (if users are part of the app)
+ 
+
+  @@index([userId]) // Optional: to create an index on userId for quicker queries
+}
